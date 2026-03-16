@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-start.py — Launch the DeepLens server.
+start.py — Launch the LocalLens server.
 
 Usage:
     python start.py            # start server (auto-builds frontend if needed)
@@ -72,7 +72,7 @@ def ensure_frontend(force_build: bool) -> None:
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Start the DeepLens server")
+    parser = argparse.ArgumentParser(description="Start the LocalLens server")
     parser.add_argument("--build",  action="store_true", help="Force rebuild the frontend")
     parser.add_argument("--dev",    action="store_true", help="Skip frontend; start backend only")
     parser.add_argument("--reload", action="store_true", help="Enable uvicorn auto-reload (dev)")
@@ -85,7 +85,7 @@ def main() -> None:
     if not args.dev:
         ensure_frontend(args.build)
 
-    print(f"\n── Starting DeepLens ──────────────────────────────────────")
+    print(f"\n── Starting LocalLens ─────────────────────────────────────")
     if DIST_DIR.exists():
         print(f"   UI  →  http://localhost:{args.port}")
     else:

@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.backends.legacy:build"
 
 [project]
-name = "deeplens-backend"
+name = "locallens-backend"
 version = "0.1.0"
 description = "Local document indexing and semantic search engine"
 readme = "README.md"
@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.scripts]
-deeplens = "backend.app.cli:main"
+locallens = "backend.app.cli:main"
 
 [tool.setuptools.packages.find]
 where = [".."]

@@ -1,11 +1,12 @@
 """
-CLI entry point for the DeepLens indexing engine.
+CLI entry point for the LocalLens indexing engine.
 
 Usage:
     python -m backend.app.cli index /path/to/folder
     python -m backend.app.cli stats
     python -m backend.app.cli search "your query" [--top-k N]
     python -m backend.app.cli ask "your question" [--top-k N] [--model MODEL]
+
 """
 from __future__ import annotations
 
@@ -142,8 +143,8 @@ def cmd_search(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="deeplens",
-        description="DeepLens local document indexing engine",
+        prog="locallens",
+        description="LocalLens local document indexing engine",
     )
     parser.add_argument(
         "-v", "--verbose",

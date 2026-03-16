@@ -41,7 +41,7 @@ export function Sidebar({ stats, documents, isIndexing, onIndexFolder }: Props) 
           <line x1="11" y1="8" x2="11" y2="14" />
           <line x1="8" y1="11" x2="14" y2="11" />
         </svg>
-        <span className="font-bold text-slate-100 tracking-tight">DeepLens</span>
+        <span className="font-bold text-slate-100 tracking-tight">LocalLens</span>
       </div>
 
       {/* Stats */}

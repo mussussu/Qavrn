@@ -168,8 +168,8 @@ export default function App() {
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Header */}
         <header className="flex items-center gap-3 px-6 py-4 border-b" style={{ borderColor: '#2a3244' }}>
-          <img src="/logo.svg" alt="LocalLens" className="w-7 h-7 shrink-0" />
-          <h1 className="text-lg font-semibold text-slate-100 tracking-tight">LocalLens</h1>
+          <img src="/logo.svg" alt="Qavrn" className="w-7 h-7 shrink-0" />
+          <h1 className="text-lg font-semibold text-slate-100 tracking-tight">Qavrn</h1>
           <span className="text-xs text-slate-500 ml-1">private AI research assistant</span>
           {stats && (
             <span
@@ -218,7 +218,7 @@ function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center h-full min-h-64 text-center px-4 select-none">
       <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-4" style={{ background: '#1e2535' }}>
-        <img src="/logo.svg" alt="LocalLens" className="w-12 h-12" />
+        <img src="/logo.svg" alt="Qavrn" className="w-12 h-12" />
       </div>
       <h2 className="text-xl font-semibold text-slate-200 mb-2">Ask your documents anything</h2>
       <p className="text-slate-500 text-sm max-w-xs">

@@ -31,7 +31,7 @@ FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
 async def lifespan(app: FastAPI):
     app.state.indexer = Indexer(settings)
     app.state.ollama = OllamaClient(base_url=settings.ollama_url)
-    logger.info("LocalLens API ready.")
+    logger.info("Qavrn API ready.")
     yield
 
 
@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
 # App
 # ---------------------------------------------------------------------------
 
-app = FastAPI(title="LocalLens API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Qavrn API", version="0.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

@@ -7,7 +7,7 @@ from typing import Iterator
 logger = logging.getLogger(__name__)
 
 _SYSTEM_PROMPT = (
-    "You are LocalLens, a private AI research assistant. "
+    "You are Qavrn, a private AI research assistant. "
     "Answer questions based ONLY on the provided context from the user's local documents. "
     "Always cite which source file your information comes from. "
     "If the context doesn't contain enough information to answer, say so honestly. "

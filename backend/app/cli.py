@@ -1,5 +1,5 @@
 """
-CLI entry point for the LocalLens indexing engine.
+CLI entry point for the Qavrn indexing engine.
 
 Usage:
     python -m backend.app.cli index /path/to/folder
@@ -143,8 +143,8 @@ def cmd_search(args: argparse.Namespace) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="locallens",
-        description="LocalLens local document indexing engine",
+        prog="qavrn",
+        description="Qavrn local document indexing engine",
     )
     parser.add_argument(
         "-v", "--verbose",

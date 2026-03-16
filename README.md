@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="frontend/public/logo.svg" alt="LocalLens Logo" width="96" height="96" />
+<img src="frontend/public/logo.svg" alt="Qavrn Logo" width="96" height="96" />
 
-# LocalLens
+# Qavrn
 
 **Your private AI research assistant. Fully local. Fully yours.**
 
@@ -14,11 +14,11 @@
 
 ---
 
-## What is LocalLens?
+## What is Qavrn?
 
-LocalLens is a local-first RAG (Retrieval-Augmented Generation) engine that indexes your documents and lets you ask questions about them in natural language. Answers are grounded in your actual files with cited sources and relevance scores — not hallucinated from a cloud model's training data. Nothing leaves your machine: no API keys, no telemetry, no internet required after the initial setup.
+Qavrn is a local-first RAG (Retrieval-Augmented Generation) engine that indexes your documents and lets you ask questions about them in natural language. Answers are grounded in your actual files with cited sources and relevance scores — not hallucinated from a cloud model's training data. Nothing leaves your machine: no API keys, no telemetry, no internet required after the initial setup.
 
-![LocalLens UI](docs/screenshot.png)
+![Qavrn UI](docs/screenshot.png)
 
 ---
 

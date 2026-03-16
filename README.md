@@ -217,14 +217,21 @@ FileWatcher (watchdog) --> debounce 2s --> Indexer (re-index changed file)
 | `.env` | plain read |
 | `.log` | plain read |
 
-### Source Code (30+ languages)
+### Source Code
 
-| Extensions | Notes |
-|------------|-------|
-| `.py` `.js` `.ts` | Python, JavaScript, TypeScript |
-| `.java` `.kt` `.swift` | JVM and Apple ecosystem |
-| `.cpp` `.c` `.rs` `.go` | Systems languages |
-| `.rb` `.php` | Scripting languages |
+| Extension | Language |
+|-----------|----------|
+| `.py` | Python |
+| `.js` | JavaScript |
+| `.ts` | TypeScript |
+| `.java` | Java |
+| `.cpp` / `.c` | C++ / C |
+| `.rs` | Rust |
+| `.go` | Go |
+| `.rb` | Ruby |
+| `.php` | PHP |
+| `.swift` | Swift |
+| `.kt` | Kotlin |
 
 ### Email & Ebooks
 

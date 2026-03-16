@@ -6,13 +6,14 @@ Usage:
     python -m backend.app.cli stats
     python -m backend.app.cli search "your query" [--top-k N]
     python -m backend.app.cli ask "your question" [--top-k N] [--model MODEL]
-
+    python -m backend.app.cli watch /path/to/folder
 """
 from __future__ import annotations
 
 import argparse
 import logging
 import sys
+import time
 from pathlib import Path
 
 
@@ -113,6 +114,46 @@ def cmd_ask(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_watch(args: argparse.Namespace) -> int:
+    from .config import settings
+    from .indexer import Indexer
+    from .watcher import FileWatcher
+
+    # Show INFO-level watcher events regardless of -v flag
+    logging.basicConfig(format="%(message)s", level=logging.INFO)
+
+    folder = Path(args.folder)
+    if not folder.exists():
+        print(f"Error: Folder not found: {folder}", file=sys.stderr)
+        return 1
+
+    indexer = Indexer()
+
+    print(f"Indexing {folder} …")
+    summary = indexer.index_folder(folder)
+    print(
+        f"Done. total={summary['total']}  indexed={summary['indexed']}"
+        f"  skipped={summary['skipped']}  failed={summary['failed']}"
+    )
+
+    watcher = FileWatcher(
+        indexer=indexer,
+        supported_extensions=settings.supported_extensions,
+    )
+    watcher.start()
+    watcher.watch(str(folder))
+
+    print(f"\nWatching {folder} for changes. Press Ctrl+C to stop.\n")
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print("\nStopping watcher…")
+        watcher.stop()
+
+    return 0
+
+
 def cmd_search(args: argparse.Namespace) -> int:
     from .indexer import Indexer
 
@@ -171,6 +212,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Number of results to return (default: 5)",
     )
 
+    # watch
+    p_watch = sub.add_parser(
+        "watch",
+        help="Index a folder then watch it for changes in real-time (Ctrl+C to stop)",
+    )
+    p_watch.add_argument("folder", help="Path to the folder to watch")
+
     # ask  (RAG)
     p_ask = sub.add_parser("ask", help="Ask a question using RAG (requires Ollama)")
     p_ask.add_argument("question", help="Natural-language question")
@@ -200,6 +248,7 @@ def main(argv: list[str] | None = None) -> int:
         "stats": cmd_stats,
         "search": cmd_search,
         "ask": cmd_ask,
+        "watch": cmd_watch,
     }
     return dispatch[args.command](args)
 

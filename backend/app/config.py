@@ -22,12 +22,17 @@ class Settings(BaseSettings):
     chroma_persist_dir: str = "./data/chroma"
     ollama_url: str = "http://localhost:11434"
     supported_extensions: List[str] = [
-        ".pdf",
-        ".docx",
-        ".md",
-        ".txt",
-        ".html",
-        ".csv",
+        # Documents
+        ".pdf", ".docx", ".md", ".txt", ".html", ".csv",
+        # Data / config
+        ".json", ".xml", ".yaml", ".yml", ".toml", ".env",
+        # Markup / text
+        ".rst", ".log",
+        # Email & ebooks
+        ".eml", ".epub",
+        # Source code
+        ".py", ".js", ".ts", ".java", ".cpp", ".c",
+        ".rs", ".go", ".rb", ".php", ".swift", ".kt",
     ]
 
     @field_validator("chunk_overlap")

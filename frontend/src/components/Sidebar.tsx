@@ -6,26 +6,45 @@ interface Props {
   documents: IndexedDocument[]
   isIndexing: boolean
   onIndexFolder: (path: string) => void
+  watchedFolders: string[]
+  isWatching: boolean
+  onWatchFolder: (path: string) => void
+  onUnwatchFolder: (path: string) => void
 }
 
 const EXT_COLOR: Record<string, string> = {
-  pdf:  '#f87171',
-  docx: '#60a5fa',
-  md:   '#a78bfa',
-  txt:  '#94a3b8',
-  csv:  '#4ade80',
-  html: '#fb923c',
+  pdf: '#f87171', docx: '#60a5fa', md: '#a78bfa',
+  txt: '#94a3b8', csv: '#4ade80', html: '#fb923c',
+  json: '#fbbf24', xml: '#f472b6', py: '#34d399',
+  js: '#fde68a', ts: '#60a5fa', rs: '#f97316',
+  go: '#67e8f9', java: '#fb923c', eml: '#c084fc', epub: '#a78bfa',
 }
 
-export function Sidebar({ stats, documents, isIndexing, onIndexFolder }: Props) {
-  const [folderInput, setFolderInput] = useState('')
-  const [showInput, setShowInput] = useState(false)
+function folderName(path: string): string {
+  return path.split(/[\\/]/).filter(Boolean).pop() ?? path
+}
+
+export function Sidebar({
+  stats, documents, isIndexing, onIndexFolder,
+  watchedFolders, isWatching, onWatchFolder, onUnwatchFolder,
+}: Props) {
+  const [indexInput, setIndexInput] = useState('')
+  const [showIndexInput, setShowIndexInput] = useState(false)
+  const [watchInput, setWatchInput] = useState('')
+  const [showWatchInput, setShowWatchInput] = useState(false)
 
   const handleIndex = () => {
-    if (!folderInput.trim()) return
-    onIndexFolder(folderInput.trim())
-    setFolderInput('')
-    setShowInput(false)
+    if (!indexInput.trim()) return
+    onIndexFolder(indexInput.trim())
+    setIndexInput('')
+    setShowIndexInput(false)
+  }
+
+  const handleWatch = () => {
+    if (!watchInput.trim()) return
+    onWatchFolder(watchInput.trim())
+    setWatchInput('')
+    setShowWatchInput(false)
   }
 
   return (
@@ -35,12 +54,7 @@ export function Sidebar({ stats, documents, isIndexing, onIndexFolder }: Props) 
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 px-4 py-4 border-b" style={{ borderColor: '#2a3244' }}>
-        <svg className="w-6 h-6 text-blue-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          <line x1="11" y1="8" x2="11" y2="14" />
-          <line x1="8" y1="11" x2="14" y2="11" />
-        </svg>
+        <img src="/logo.svg" alt="Qavrn" className="w-6 h-6 shrink-0" />
         <span className="font-bold text-slate-100 tracking-tight">Qavrn</span>
       </div>
 
@@ -57,16 +71,16 @@ export function Sidebar({ stats, documents, isIndexing, onIndexFolder }: Props) 
         )}
       </div>
 
-      {/* Index folder section */}
+      {/* Index folder */}
       <div className="px-4 py-3 border-b" style={{ borderColor: '#2a3244' }}>
-        {showInput ? (
+        {showIndexInput ? (
           <div className="space-y-2">
             <input
               autoFocus
               type="text"
-              value={folderInput}
-              onChange={e => setFolderInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleIndex()}
+              value={indexInput}
+              onChange={e => setIndexInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleIndex(); if (e.key === 'Escape') setShowIndexInput(false) }}
               placeholder="/path/to/folder"
               className="w-full text-xs px-2.5 py-1.5 rounded-lg outline-none text-slate-200 placeholder-slate-600"
               style={{ background: '#1e2535', border: '1px solid #2a3244' }}
@@ -74,46 +88,111 @@ export function Sidebar({ stats, documents, isIndexing, onIndexFolder }: Props) 
             <div className="flex gap-1.5">
               <button
                 onClick={handleIndex}
-                disabled={isIndexing || !folderInput.trim()}
+                disabled={isIndexing || !indexInput.trim()}
                 className="flex-1 text-xs py-1 rounded-lg font-medium transition-colors disabled:opacity-40"
                 style={{ background: '#4f8ef7', color: 'white' }}
               >
                 {isIndexing ? 'Indexing…' : 'Index'}
               </button>
-              <button
-                onClick={() => setShowInput(false)}
-                className="text-xs px-2 py-1 rounded-lg"
-                style={{ background: '#1e2535', color: '#64748b' }}
-              >
+              <button onClick={() => setShowIndexInput(false)} className="text-xs px-2 py-1 rounded-lg" style={{ background: '#1e2535', color: '#64748b' }}>
                 Cancel
               </button>
             </div>
           </div>
         ) : (
           <button
-            onClick={() => setShowInput(true)}
+            onClick={() => setShowIndexInput(true)}
             disabled={isIndexing}
             className="w-full flex items-center justify-center gap-1.5 text-xs py-1.5 rounded-lg font-medium transition-colors disabled:opacity-40"
             style={{ background: '#1e2535', color: '#94a3b8', border: '1px solid #2a3244' }}
           >
-            {isIndexing ? (
-              <>
-                <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-                </svg>
-                Indexing…
-              </>
-            ) : (
-              <>
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
-                  <line x1="12" y1="11" x2="12" y2="17" />
-                  <line x1="9" y1="14" x2="15" y2="14" />
-                </svg>
-                Index Folder
-              </>
-            )}
+            {isIndexing ? <SpinIcon /> : <FolderPlusIcon />}
+            {isIndexing ? 'Indexing…' : 'Index Folder'}
           </button>
+        )}
+      </div>
+
+      {/* Watched folders */}
+      <div className="px-4 py-3 border-b" style={{ borderColor: '#2a3244' }}>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+            Watching
+            {watchedFolders.length > 0 && (
+              <span className="px-1 rounded text-green-400 font-bold" style={{ background: '#14291a' }}>
+                {watchedFolders.length}
+              </span>
+            )}
+          </p>
+          {!showWatchInput && (
+            <button
+              onClick={() => setShowWatchInput(true)}
+              disabled={isWatching}
+              className="text-xs px-1.5 py-0.5 rounded transition-colors disabled:opacity-40"
+              style={{ background: '#1e2535', color: '#4f8ef7' }}
+              title="Watch a folder for live changes"
+            >
+              + Add
+            </button>
+          )}
+        </div>
+
+        {showWatchInput && (
+          <div className="space-y-2 mb-2">
+            <input
+              autoFocus
+              type="text"
+              value={watchInput}
+              onChange={e => setWatchInput(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleWatch(); if (e.key === 'Escape') setShowWatchInput(false) }}
+              placeholder="/path/to/folder"
+              className="w-full text-xs px-2.5 py-1.5 rounded-lg outline-none text-slate-200 placeholder-slate-600"
+              style={{ background: '#1e2535', border: '1px solid #2a3244' }}
+            />
+            <div className="flex gap-1.5">
+              <button
+                onClick={handleWatch}
+                disabled={isWatching || !watchInput.trim()}
+                className="flex-1 text-xs py-1 rounded-lg font-medium transition-colors disabled:opacity-40"
+                style={{ background: '#059669', color: 'white' }}
+              >
+                {isWatching ? 'Watching…' : 'Watch & Index'}
+              </button>
+              <button onClick={() => setShowWatchInput(false)} className="text-xs px-2 py-1 rounded-lg" style={{ background: '#1e2535', color: '#64748b' }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {watchedFolders.length === 0 ? (
+          <p className="text-xs leading-relaxed" style={{ color: '#374151' }}>
+            No folders watched. Add one to auto-reindex on changes.
+          </p>
+        ) : (
+          <ul className="space-y-1">
+            {watchedFolders.map(folder => (
+              <li key={folder}>
+                <div
+                  className="flex items-center gap-2 px-2 py-1.5 rounded-lg group"
+                  style={{ background: '#0d1f12' }}
+                >
+                  {/* Pulsing green dot */}
+                  <span className="w-2 h-2 rounded-full shrink-0 animate-pulse" style={{ background: '#4ade80' }} />
+                  <span className="text-xs text-green-300 truncate flex-1 min-w-0" title={folder}>
+                    {folderName(folder)}
+                  </span>
+                  <button
+                    onClick={() => onUnwatchFolder(folder)}
+                    className="shrink-0 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                    style={{ color: '#64748b' }}
+                    title={`Stop watching ${folder}`}
+                  >
+                    ✕
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
 
@@ -136,17 +215,11 @@ export function Sidebar({ stats, documents, isIndexing, onIndexFolder }: Props) 
                 >
                   <span
                     className="shrink-0 text-xs font-bold px-1 rounded"
-                    style={{
-                      background: '#1e2535',
-                      color: EXT_COLOR[doc.file_type] ?? '#94a3b8',
-                    }}
+                    style={{ background: '#1e2535', color: EXT_COLOR[doc.file_type] ?? '#94a3b8' }}
                   >
                     {doc.file_type.toUpperCase()}
                   </span>
-                  <span
-                    className="text-xs text-slate-300 truncate"
-                    title={doc.file_path}
-                  >
+                  <span className="text-xs text-slate-300 truncate" title={doc.file_path}>
                     {doc.filename}
                   </span>
                 </div>
@@ -165,5 +238,22 @@ function StatPill({ label, value }: { label: string; value: number }) {
       <p className="text-base font-bold text-slate-200">{value.toLocaleString()}</p>
       <p className="text-xs text-slate-600">{label}</p>
     </div>
+  )
+}
+
+function FolderPlusIcon() {
+  return (
+    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+      <line x1="12" y1="11" x2="12" y2="17" /><line x1="9" y1="14" x2="15" y2="14" />
+    </svg>
+  )
+}
+
+function SpinIcon() {
+  return (
+    <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+    </svg>
   )
 }

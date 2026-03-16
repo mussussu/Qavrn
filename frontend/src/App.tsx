@@ -20,6 +20,8 @@ export default function App() {
   const [stats, setStats] = useState<Stats | null>(null)
   const [documents, setDocuments] = useState<IndexedDocument[]>([])
   const [isIndexing, setIsIndexing] = useState(false)
+  const [watchedFolders, setWatchedFolders] = useState<string[]>([])
+  const [isWatching, setIsWatching] = useState(false)
 
   const [selectedModel, setSelectedModel] = useState('llama3.2')
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -28,12 +30,14 @@ export default function App() {
 
   const refreshStats = useCallback(async () => {
     try {
-      const [healthData, docsData] = await Promise.all([
+      const [healthData, docsData, watchedData] = await Promise.all([
         fetchJson<Stats>('/api/health'),
         fetchJson<{ documents: IndexedDocument[] }>('/api/documents'),
+        fetchJson<{ folders: string[] }>('/api/watched'),
       ])
       setStats(healthData)
       setDocuments(docsData.documents)
+      setWatchedFolders(watchedData.folders)
     } catch {
       // Backend not ready yet — silently ignore
     }
@@ -152,6 +156,38 @@ export default function App() {
     }
   }, [isIndexing, refreshStats])
 
+  // ── Watch folder ─────────────────────────────────────────────────────────
+
+  const handleWatchFolder = useCallback(async (folderPath: string) => {
+    if (!folderPath.trim() || isWatching) return
+    setIsWatching(true)
+    try {
+      await fetchJson('/api/watch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_path: folderPath }),
+      })
+      await refreshStats()
+    } catch (err) {
+      console.error('Watch failed:', err)
+    } finally {
+      setIsWatching(false)
+    }
+  }, [isWatching, refreshStats])
+
+  const handleUnwatchFolder = useCallback(async (folderPath: string) => {
+    try {
+      await fetchJson('/api/watch', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder_path: folderPath }),
+      })
+      await refreshStats()
+    } catch (err) {
+      console.error('Unwatch failed:', err)
+    }
+  }, [refreshStats])
+
   // ── Render ──────────────────────────────────────────────────────────────
 
   return (
@@ -162,6 +198,10 @@ export default function App() {
         documents={documents}
         isIndexing={isIndexing}
         onIndexFolder={handleIndexFolder}
+        watchedFolders={watchedFolders}
+        isWatching={isWatching}
+        onWatchFolder={handleWatchFolder}
+        onUnwatchFolder={handleUnwatchFolder}
       />
 
       {/* Main content */}

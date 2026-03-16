@@ -5,7 +5,7 @@ import json
 import logging
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,6 +17,7 @@ from .config import settings
 from .indexer import Indexer
 from .llm import OllamaClient
 from .rag import RAGEngine
+from .watcher import FileWatcher
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +30,30 @@ FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.indexer = Indexer(settings)
-    app.state.ollama = OllamaClient(base_url=settings.ollama_url)
+    indexer = Indexer(settings)
+    ollama = OllamaClient(base_url=settings.ollama_url)
+    watcher = FileWatcher(
+        indexer=indexer,
+        supported_extensions=settings.supported_extensions,
+    )
+    watcher.start()
+
+    # Resume watching any pre-configured folders from settings
+    for folder in settings.watched_folders:
+        p = Path(folder)
+        if p.exists():
+            watcher.watch(str(p))
+        else:
+            logger.warning("Configured watched folder does not exist: %s", folder)
+
+    app.state.indexer = indexer
+    app.state.ollama = ollama
+    app.state.watcher = watcher
     logger.info("Qavrn API ready.")
+
     yield
+
+    watcher.stop()
 
 
 # ---------------------------------------------------------------------------
@@ -69,8 +90,12 @@ class IndexRequest(BaseModel):
     folder_path: str
 
 
+class WatchRequest(BaseModel):
+    folder_path: str
+
+
 # ---------------------------------------------------------------------------
-# API routes
+# API routes — existing
 # ---------------------------------------------------------------------------
 
 @app.get("/api/health")
@@ -103,12 +128,10 @@ async def ask(body: AskRequest, request: Request) -> StreamingResponse:
         try:
             rag = RAGEngine(indexer=indexer, ollama=ollama)
 
-            # Retrieval is blocking — run in thread
             token_iter, sources = await asyncio.to_thread(
                 rag.query_stream, body.question, body.top_k, body.model
             )
 
-            # Stream tokens; each next() blocks on the Ollama HTTP stream
             def _next(it):
                 return next(it, None)
 
@@ -116,10 +139,8 @@ async def ask(body: AskRequest, request: Request) -> StreamingResponse:
                 token = await asyncio.to_thread(_next, token_iter)
                 if token is None:
                     break
-                payload = json.dumps({"type": "token", "content": token})
-                yield f"data: {payload}\n\n"
+                yield f"data: {json.dumps({'type': 'token', 'content': token})}\n\n"
 
-            # Send sources after all tokens
             sources_data = [
                 {"filename": s.filename, "chunk_text": s.chunk_text, "score": round(s.score, 4)}
                 for s in sources
@@ -153,15 +174,10 @@ async def index_folder(body: IndexRequest, request: Request) -> Dict[str, Any]:
     if not folder.exists():
         raise HTTPException(status_code=404, detail=f"Folder not found: {folder}")
 
-    # index_folder is slow — run in thread pool so the event loop stays free
     summary = await asyncio.to_thread(indexer.index_folder, folder)
     stats = await asyncio.to_thread(indexer.get_stats)
 
-    return {
-        **summary,
-        "documents": stats.documents,
-        "chunks": stats.chunks,
-    }
+    return {**summary, "documents": stats.documents, "chunks": stats.chunks}
 
 
 @app.get("/api/stats")
@@ -177,10 +193,55 @@ async def stats(request: Request) -> Dict[str, Any]:
 
 
 @app.get("/api/documents")
-async def list_documents(request: Request):
+async def list_documents(request: Request) -> Dict[str, Any]:
     indexer: Indexer = request.app.state.indexer
     docs = await asyncio.to_thread(indexer.store.list_documents)
     return {"documents": docs}
+
+
+# ---------------------------------------------------------------------------
+# API routes — watcher (Feature 1)
+# ---------------------------------------------------------------------------
+
+@app.post("/api/watch")
+async def watch_folder(body: WatchRequest, request: Request) -> Dict[str, Any]:
+    """Index a folder (if not already current) then start watching it for changes."""
+    indexer: Indexer = request.app.state.indexer
+    watcher: FileWatcher = request.app.state.watcher
+    folder = Path(body.folder_path)
+
+    if not folder.exists():
+        raise HTTPException(status_code=404, detail=f"Folder not found: {folder}")
+
+    # Index first (skips unchanged files automatically)
+    summary = await asyncio.to_thread(indexer.index_folder, folder)
+    stats = await asyncio.to_thread(indexer.get_stats)
+
+    # Then register the watch
+    await asyncio.to_thread(watcher.watch, str(folder))
+
+    return {
+        **summary,
+        "documents": stats.documents,
+        "chunks": stats.chunks,
+        "watching": True,
+        "folder": str(folder.resolve()),
+    }
+
+
+@app.get("/api/watched")
+async def get_watched(request: Request) -> Dict[str, List[str]]:
+    """Return the list of currently watched folders."""
+    watcher: FileWatcher = request.app.state.watcher
+    return {"folders": watcher.watched_folders}
+
+
+@app.delete("/api/watch")
+async def unwatch_folder(body: WatchRequest, request: Request) -> Dict[str, Any]:
+    """Stop watching a folder. Indexed data is not removed."""
+    watcher: FileWatcher = request.app.state.watcher
+    await asyncio.to_thread(watcher.unwatch, body.folder_path)
+    return {"folder": body.folder_path, "watching": False}
 
 
 # ---------------------------------------------------------------------------
@@ -188,15 +249,12 @@ async def list_documents(request: Request):
 # ---------------------------------------------------------------------------
 
 if FRONTEND_DIST.exists():
-    # Mount assets (JS/CSS bundles) under /assets
     assets_dir = FRONTEND_DIST / "assets"
     if assets_dir.exists():
         app.mount("/assets", StaticFiles(directory=str(assets_dir)), name="assets")
 
     @app.get("/{full_path:path}", include_in_schema=False)
     async def serve_spa(full_path: str):
-        """Catch-all: return index.html for any non-API path (SPA fallback)."""
-        # Try serving a real file first
         candidate = FRONTEND_DIST / full_path
         if candidate.exists() and candidate.is_file():
             return FileResponse(str(candidate))

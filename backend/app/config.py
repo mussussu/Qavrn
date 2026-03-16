@@ -1,0 +1,47 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import List
+
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_prefix="DEEPLENS_",
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
+
+    watched_folders: List[str] = []
+    chunk_size: int = 500
+    chunk_overlap: int = 50
+    embedding_model: str = "all-MiniLM-L6-v2"
+    chroma_persist_dir: str = "./data/chroma"
+    ollama_url: str = "http://localhost:11434"
+    supported_extensions: List[str] = [
+        ".pdf",
+        ".docx",
+        ".md",
+        ".txt",
+        ".html",
+        ".csv",
+    ]
+
+    @field_validator("chunk_overlap")
+    @classmethod
+    def overlap_less_than_size(cls, v: int, info) -> int:
+        chunk_size = info.data.get("chunk_size", 500)
+        if v >= chunk_size:
+            raise ValueError("chunk_overlap must be less than chunk_size")
+        return v
+
+    @property
+    def chroma_persist_path(self) -> Path:
+        return Path(self.chroma_persist_dir)
+
+
+# Module-level singleton — override via environment variables or .env
+settings = Settings()

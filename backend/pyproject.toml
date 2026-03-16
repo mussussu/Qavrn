@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "deeplens-backend"
+version = "0.1.0"
+description = "Local document indexing and semantic search engine"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "PyPDF2>=3.0",
+    "python-docx>=1.0",
+    "markdown>=3.5",
+    "sentence-transformers>=2.7",
+    "chromadb>=0.5",
+    "requests>=2.31",
+]
+
+[project.scripts]
+deeplens = "backend.app.cli:main"
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["backend*"]
+
+# ---------------------------------------------------------------------------
+# Development / tooling configuration
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_unused_ignores = true

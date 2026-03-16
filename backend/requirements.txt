@@ -1,0 +1,31 @@
+# Core dependencies for the DeepLens indexing engine
+# Install with: pip install -r requirements.txt
+
+# Settings management
+pydantic>=2.0
+pydantic-settings>=2.0
+
+# Document parsing
+PyPDF2>=3.0
+python-docx>=1.0
+markdown>=3.5
+
+# Embeddings (downloads model weights on first run, then works offline)
+sentence-transformers>=2.7
+
+# Vector store (local, no server required)
+chromadb>=0.5
+
+# HTTP client (used by OllamaClient)
+requests>=2.31
+
+# Web server
+fastapi>=0.111
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+
+# Transitive dependencies pinned for reproducibility
+# (sentence-transformers pulls these in, but explicit pins help)
+torch>=2.0
+transformers>=4.40
+numpy>=1.24

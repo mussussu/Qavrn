@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #0f1117;
+  --color-panel: #161b27;
+  --color-panel-hover: #1e2535;
+  --color-border: #2a3244;
+  --color-accent: #4f8ef7;
+  --color-accent-dim: #2d5bbd;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  background-color: #0f1117;
+  color: #e2e8f0;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a3244;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d4f6e;
+}
+
+/* Streaming cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.cursor-blink::after {
+  content: "▋";
+  display: inline-block;
+  animation: blink 0.9s step-start infinite;
+  color: #4f8ef7;
+  margin-left: 1px;
+}
+
+/* Prose overrides for dark theme */
+.prose-dark {
+  color: #cbd5e1;
+}
+.prose-dark h1,
+.prose-dark h2,
+.prose-dark h3,
+.prose-dark h4 {
+  color: #f1f5f9;
+}
+.prose-dark code {
+  background: #1e2535;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.875em;
+  color: #93c5fd;
+}
+.prose-dark pre {
+  background: #1e2535;
+  border: 1px solid #2a3244;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+}
+.prose-dark pre code {
+  background: transparent;
+  padding: 0;
+}
+.prose-dark blockquote {
+  border-left: 3px solid #4f8ef7;
+  padding-left: 1rem;
+  color: #94a3b8;
+}
+.prose-dark a {
+  color: #4f8ef7;
+}
+.prose-dark ul,
+.prose-dark ol {
+  padding-left: 1.5rem;
+}
+.prose-dark li {
+  margin: 0.25rem 0;
+}
+.prose-dark table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.prose-dark th,
+.prose-dark td {
+  border: 1px solid #2a3244;
+  padding: 0.4rem 0.75rem;
+}
+.prose-dark th {
+  background: #1e2535;
+}

@@ -1,0 +1,23 @@
+first part resume
+Here are the key points Ammous makes about Bitcoin and fiat currency:
+
+* **Fiat currency vs. Bitcoin:**
+    * Fiat currency is not backed by a physical commodity (like gold) but by the issuing government. 
+    * Bitcoin is a digital currency with a limited supply (21 million) and operates on a decentralized network.
+* **Hardness of money:**
+    * Throughout history, money that was harder to produce and inflate (e.g. gold) became more valuable than money that was easier to produce (e.g. seashells).
+    * Bitcoin's limited supply makes it a hard currency.
+* **Advantages of Bitcoin over fiat currency:**
+    * Bitcoin is immutable (cannot be altered).
+    * Bitcoin is decentralized (not controlled by any single entity).
+    * Bitcoin has a fixed supply (resistant to inflation).
+
+Ammous also talks about the Austrian School of Economics:
+
+* **Austrian vs. Mainstream Economics:**
+    * Austrian economics believes that value is subjective and economic calculation is done individually.
+    * Mainstream economics often relies on objective measures and centralized control.
+* **Austrian Economics and Bitcoin:**
+    * Because Austrians value individual decision-making, they are more likely to appreciate decentralized systems like Bitcoin.
+
+second part:

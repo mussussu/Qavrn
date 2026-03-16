@@ -4,7 +4,12 @@ import { ChatMessageView } from './components/ChatMessage'
 import { SearchBar } from './components/SearchBar'
 import { Sidebar } from './components/Sidebar'
 
-const API = ''  // same origin; Vite proxy handles /api in dev
+// In Tauri the page loads from tauri://localhost so relative URLs won't work.
+// Detect the Tauri runtime (v1 uses __TAURI__, v2 uses __TAURI_INTERNALS__).
+const isTauri =
+  typeof window !== 'undefined' &&
+  ('__TAURI_INTERNALS__' in window || '__TAURI__' in window)
+const API = isTauri ? 'http://localhost:8000' : ''  // Vite proxy handles /api in dev
 
 async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
   const res = await fetch(API + url, init)

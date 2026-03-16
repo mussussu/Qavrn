@@ -45,7 +45,7 @@ export function SearchBar({ onSubmit, isDisabled, model, onModelChange }: Props)
         onChange={e => onModelChange(e.target.value)}
         disabled={isDisabled}
         className="shrink-0 text-xs rounded-lg px-2 py-1.5 outline-none cursor-pointer disabled:opacity-40"
-        style={{ background: '#1e2535', color: '#94a3b8', border: '1px solid #2a3244' }}
+        style={{ background: '#1e2535', color: '#D1D5DB', border: '1px solid #2a3244' }}
         title="Ollama model"
       >
         {MODELS.map(m => (
@@ -62,8 +62,8 @@ export function SearchBar({ onSubmit, isDisabled, model, onModelChange }: Props)
         onKeyDown={handleKeyDown}
         disabled={isDisabled}
         placeholder={isDisabled ? 'Thinking…' : 'Ask your documents…'}
-        className="flex-1 resize-none bg-transparent outline-none text-sm text-slate-200 placeholder-slate-600 leading-relaxed py-1.5 px-1 disabled:opacity-60"
-        style={{ maxHeight: '160px' }}
+        className="flex-1 resize-none bg-transparent outline-none text-sm leading-relaxed py-1.5 px-1 disabled:opacity-60 placeholder-slate-500"
+        style={{ color: '#ffffff', maxHeight: '160px' }}
       />
 
       {/* Send button */}

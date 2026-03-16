@@ -6,6 +6,7 @@ Usage:
     python start.py            # start server (auto-builds frontend if needed)
     python start.py --build    # force rebuild frontend before starting
     python start.py --dev      # start backend only (run Vite separately)
+    python start.py --api-only # start backend only (Tauri handles the frontend)
     python start.py --port N   # listen on a different port (default: 8000)
 """
 from __future__ import annotations
@@ -73,20 +74,24 @@ def ensure_frontend(force_build: bool) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Start the Qavrn server")
-    parser.add_argument("--build",  action="store_true", help="Force rebuild the frontend")
-    parser.add_argument("--dev",    action="store_true", help="Skip frontend; start backend only")
-    parser.add_argument("--reload", action="store_true", help="Enable uvicorn auto-reload (dev)")
-    parser.add_argument("--port",   type=int, default=8000, metavar="N", help="Port (default 8000)")
-    parser.add_argument("--host",   default="0.0.0.0", help="Bind host (default 0.0.0.0)")
+    parser.add_argument("--build",    action="store_true", help="Force rebuild the frontend")
+    parser.add_argument("--dev",      action="store_true", help="Skip frontend; start backend only")
+    parser.add_argument("--api-only", action="store_true", dest="api_only",
+                        help="Start backend only — Tauri handles the frontend")
+    parser.add_argument("--reload",   action="store_true", help="Enable uvicorn auto-reload (dev)")
+    parser.add_argument("--port",     type=int, default=8000, metavar="N", help="Port (default 8000)")
+    parser.add_argument("--host",     default="0.0.0.0", help="Bind host (default 0.0.0.0)")
     args = parser.parse_args()
 
     ensure_backend_deps()
 
-    if not args.dev:
+    if not args.dev and not args.api_only:
         ensure_frontend(args.build)
 
     print(f"\n── Starting Qavrn ─────────────────────────────────────")
-    if DIST_DIR.exists():
+    if args.api_only:
+        print(f"   API  →  http://localhost:{args.port}  (Tauri mode)")
+    elif DIST_DIR.exists():
         print(f"   UI  →  http://localhost:{args.port}")
     else:
         print(f"   API →  http://localhost:{args.port}/docs  (no frontend built)")

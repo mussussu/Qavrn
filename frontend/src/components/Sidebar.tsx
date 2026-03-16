@@ -60,14 +60,14 @@ export function Sidebar({
 
       {/* Stats */}
       <div className="px-4 py-3 border-b" style={{ borderColor: '#2a3244' }}>
-        <p className="text-xs text-slate-600 uppercase tracking-wider mb-2">Index</p>
+        <p className="text-xs uppercase tracking-wider mb-2" style={{ color: '#06B6D4' }}>Index</p>
         {stats ? (
           <div className="grid grid-cols-2 gap-2">
             <StatPill label="Documents" value={stats.documents} />
             <StatPill label="Chunks" value={stats.chunks} />
           </div>
         ) : (
-          <p className="text-xs text-slate-600">Loading…</p>
+          <p className="text-xs" style={{ color: '#A0AEC0' }}>Loading...</p>
         )}
       </div>
 
@@ -82,8 +82,8 @@ export function Sidebar({
               onChange={e => setIndexInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleIndex(); if (e.key === 'Escape') setShowIndexInput(false) }}
               placeholder="/path/to/folder"
-              className="w-full text-xs px-2.5 py-1.5 rounded-lg outline-none text-slate-200 placeholder-slate-600"
-              style={{ background: '#1e2535', border: '1px solid #2a3244' }}
+              className="w-full text-xs px-2.5 py-1.5 rounded-lg outline-none placeholder-slate-500"
+              style={{ background: '#1e2535', border: '1px solid #2a3244', color: '#ffffff' }}
             />
             <div className="flex gap-1.5">
               <button
@@ -115,7 +115,7 @@ export function Sidebar({
       {/* Watched folders */}
       <div className="px-4 py-3 border-b" style={{ borderColor: '#2a3244' }}>
         <div className="flex items-center justify-between mb-2">
-          <p className="text-xs text-slate-600 uppercase tracking-wider flex items-center gap-1.5">
+          <p className="text-xs uppercase tracking-wider flex items-center gap-1.5" style={{ color: '#06B6D4' }}>
             Watching
             {watchedFolders.length > 0 && (
               <span className="px-1 rounded text-green-400 font-bold" style={{ background: '#14291a' }}>
@@ -145,8 +145,8 @@ export function Sidebar({
               onChange={e => setWatchInput(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleWatch(); if (e.key === 'Escape') setShowWatchInput(false) }}
               placeholder="/path/to/folder"
-              className="w-full text-xs px-2.5 py-1.5 rounded-lg outline-none text-slate-200 placeholder-slate-600"
-              style={{ background: '#1e2535', border: '1px solid #2a3244' }}
+              className="w-full text-xs px-2.5 py-1.5 rounded-lg outline-none placeholder-slate-500"
+              style={{ background: '#1e2535', border: '1px solid #2a3244', color: '#ffffff' }}
             />
             <div className="flex gap-1.5">
               <button
@@ -165,7 +165,7 @@ export function Sidebar({
         )}
 
         {watchedFolders.length === 0 ? (
-          <p className="text-xs leading-relaxed" style={{ color: '#374151' }}>
+          <p className="text-xs leading-relaxed" style={{ color: '#A0AEC0' }}>
             No folders watched. Add one to auto-reindex on changes.
           </p>
         ) : (
@@ -198,11 +198,11 @@ export function Sidebar({
 
       {/* Document list */}
       <div className="flex-1 overflow-y-auto px-4 py-3">
-        <p className="text-xs text-slate-600 uppercase tracking-wider mb-2">
+        <p className="text-xs uppercase tracking-wider mb-2" style={{ color: '#06B6D4' }}>
           Indexed files {documents.length > 0 && `(${documents.length})`}
         </p>
         {documents.length === 0 ? (
-          <p className="text-xs text-slate-700 leading-relaxed">
+          <p className="text-xs leading-relaxed" style={{ color: '#A0AEC0' }}>
             No documents indexed yet. Use "Index Folder" to get started.
           </p>
         ) : (
@@ -219,7 +219,7 @@ export function Sidebar({
                   >
                     {doc.file_type.toUpperCase()}
                   </span>
-                  <span className="text-xs text-slate-300 truncate" title={doc.file_path}>
+                  <span className="text-xs truncate" style={{ color: '#ffffff' }} title={doc.file_path}>
                     {doc.filename}
                   </span>
                 </div>
@@ -235,8 +235,8 @@ export function Sidebar({
 function StatPill({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg p-2 text-center" style={{ background: '#161b27' }}>
-      <p className="text-base font-bold text-slate-200">{value.toLocaleString()}</p>
-      <p className="text-xs text-slate-600">{label}</p>
+      <p className="text-base font-bold" style={{ color: '#ffffff' }}>{value.toLocaleString()}</p>
+      <p className="text-xs" style={{ color: '#A0AEC0' }}>{label}</p>
     </div>
   )
 }

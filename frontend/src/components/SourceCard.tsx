@@ -30,12 +30,12 @@ export function SourceCard({ source, rank }: Props) {
       <div className="flex items-start gap-2 mb-2">
         <span
           className="shrink-0 text-xs font-bold px-1.5 py-0.5 rounded"
-          style={{ background: '#1e2535', color: '#64748b' }}
+          style={{ background: '#1e2535', color: '#A0AEC0' }}
         >
           #{rank}
         </span>
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-slate-200 truncate" title={source.filename}>
+          <p className="font-medium truncate" style={{ color: '#ffffff' }} title={source.filename}>
             {source.filename}
           </p>
           {/* Score bar */}
@@ -51,7 +51,7 @@ export function SourceCard({ source, rank }: Props) {
             </span>
             <span
               className="text-xs px-1 rounded shrink-0"
-              style={{ background: '#1e2535', color: '#64748b' }}
+              style={{ background: '#1e2535', color: '#A0AEC0' }}
             >
               {ext}
             </span>
@@ -60,7 +60,7 @@ export function SourceCard({ source, rank }: Props) {
       </div>
 
       {/* Chunk text */}
-      <p className="text-slate-400 text-xs leading-relaxed">
+      <p className="text-xs leading-relaxed" style={{ color: '#D1D5DB' }}>
         {expanded ? preview : short}
       </p>
 

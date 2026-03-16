@@ -13,8 +13,8 @@ export function ChatMessageView({ message }: Props) {
       {/* Question bubble */}
       <div className="flex justify-end">
         <div
-          className="px-4 py-2.5 rounded-2xl rounded-tr-sm text-sm text-slate-100 max-w-lg"
-          style={{ background: '#1e3a5f' }}
+          className="px-4 py-2.5 rounded-2xl rounded-tr-sm text-sm max-w-lg"
+          style={{ background: '#1e3a5f', color: '#ffffff' }}
         >
           {message.question}
         </div>
@@ -37,7 +37,7 @@ export function ChatMessageView({ message }: Props) {
             </ReactMarkdown>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-slate-500 text-sm py-1">
+          <div className="flex items-center gap-2 text-sm py-1" style={{ color: '#A0AEC0' }}>
             <SearchingDots />
             <span>Searching your documents…</span>
           </div>
@@ -47,7 +47,7 @@ export function ChatMessageView({ message }: Props) {
       {/* Sources */}
       {message.sources.length > 0 && (
         <div>
-          <p className="text-xs text-slate-600 uppercase tracking-wider mb-2 px-1">
+          <p className="text-xs uppercase tracking-wider mb-2 px-1" style={{ color: '#06B6D4' }}>
             Sources
           </p>
           <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))' }}>

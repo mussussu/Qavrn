@@ -48,7 +48,7 @@ Qavrn is a local-first RAG (Retrieval-Augmented Generation) engine that indexes 
 ### Install & run
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/qavrn.git
+git clone https://github.com/mussussu/qavrn.git
 cd qavrn
 
 # Install frontend dependencies
